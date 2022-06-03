@@ -1,10 +1,16 @@
 import React from 'react';
 import AWS from 'aws-sdk'
 import { SNSClient, PublishCommand} from "@aws-sdk/client-sns";
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+
+const ACCESS_KEY_ID = ''
+const SECRET_ACCESS_KEY = ''
+const SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:558579932727:local-notifications'
 
 AWS.config.update({
-  accessKeyId: 'AKIAYEDPVLY3YZIODYP6',
-  secretAccessKey: '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',
+  accessKeyId: ACCESS_KEY_ID,
+  secretAccessKey: SECRET_ACCESS_KEY,
   region: 'us-east-1'
 })
 
@@ -23,7 +29,7 @@ export default class MessageBox extends React.Component {
 
   handleSubmit(event) {
     const client = new SNSClient(AWS.config);
-    const message = {"Message":this.state.value, "TopicArn":"arn:aws:sns:us-east-1:558579932727:local-notifications"}
+    const message = {"Message":this.state.value, "TopicArn":SNS_TOPIC_ARN}
     const command = new PublishCommand(message);
     console.log('Sending SNS Message')
     client.send(command).then(
@@ -34,19 +40,27 @@ export default class MessageBox extends React.Component {
         console.log('Encountered Error')
       }
     );
-    alert('A name was submitted: ' + this.state.value);
     event.preventDefault();
   }
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-      <label>
-        Message:
-        <textarea value={this.state.value} onChange={this.handleChange} />
-      </label>
-      <input type="submit" value="Submit" />
-      </form>
+      // <form onSubmit={this.handleSubmit}>
+      // <label>
+      //   Message:
+      //   <textarea value={this.state.value} onChange={this.handleChange} />
+      // </label>
+      // <input type="submit" value="Submit" />
+      // </form>
+        <Form onSubmit={this.handleSubmit}>
+          <Form.Group className="mb-3" controlId="formSendMessage">
+            <Form.Label>Send Message</Form.Label>
+            <Form.Control type="message" placeholder="Enter message here" value={this.state.value} onChange={this.handleChange} />
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+      </Form>
     );
   }
 }
